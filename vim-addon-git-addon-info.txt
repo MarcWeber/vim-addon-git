@@ -1,0 +1,15 @@
+{
+  "name" : "vim-addon-git-haxe",
+  "version" : "0.1",
+  "author" : "Marc Weber <marco-oweber@gmx.de>",
+  "maintainer" : "Marc Weber <marco-oweber@gmx.de>",
+  "repository" : {"type": "git", "url": "git://github.com/MarcWeber/vim-addon-git.git"},
+  "dependencies" : {
+    "vim-addon-mw-utils": {},
+    "tlib": {},
+    "vim-addon-views": {},
+    "vim-addon-goto-thing-at-cursor": {},
+    "vim-addon-background-cmd": {},
+  },
+  "description" : "my vim interface covering 96% of the git commands I use most often"
+}
