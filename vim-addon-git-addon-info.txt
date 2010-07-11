@@ -9,7 +9,6 @@
     "tlib": {},
     "vim-addon-views": {},
     "vim-addon-goto-thing-at-cursor": {},
-    "vim-addon-background-cmd": {},
   },
   "description" : "my vim interface covering 96% of the git commands I use most often"
 }
