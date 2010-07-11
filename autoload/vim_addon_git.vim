@@ -1,24 +1,39 @@
-fun! s:ScratchClean(name)
-  exec "TScratch 'scratch':".string("__".a:name."__")
-  %g!//d
-endf
-
-fun! s:ScratchCleanAdvanced(name, onRead, onWrite, helptext)
-  call s:ScratchClean(a:name)
-  if type(a:onWrite) == type("")
-    exec 'au vim_addon_git BufWriteCmd <buffer> '.a:onWrite
+" goto feature {{{1
+fun! vim_addon_git#GitGotoLocations()
+  " only add commit location if the commit exists
+  let thing = expand('<cWORD>')
+  if thing =~ '^[ab]/'
+    " diff file a/foo/bar ? strip a
+    if filereadable(thing[2:])
+      return [{ 'filename' : thing[2:], 'break' : 1 }]
+    endif
+    return []
+  else
+    " hash ?
+    try
+      let hash = substitute(thing,'[<>]','','g')
+      call tovl#runtaskinbackground#System(["git","rev-list","-1",hash])
+      " no failure 
+      let list = [ { 'filename' : views#View('exec', ['git','show',hash], 1), 'break' : 1} ]
+    catch /.*/
+      let list = []
+    endtry
+    return list
   endif
-  exec 'au vim_addon_git BufReadCmd <buffer> '.a:onRead
-  exec 'command! -nargs=0 -buffer Help call vim_addon_git#Help('.string(a:helptext).')'
-  " get contents:
-  e!
 endf
 
-fun! vim_addon_git#Help(h)
-  call s:ScratchClean("HELP_OF_TMP_BUFFER")
-  %g!//d
-  call append(0, a:h)
-endf
+" StatusGit view {{{1
+fun! vim_addon_git#Names()
+  return  {
+    \ 'a' : 'add'
+    \ ,'p' : 'add patched'
+    \ ,'U' : 'unstage (git rm --cached)'
+    \ ,'r' : 'rm (git rm)'
+    \ ,'D' : '!git diff on file under cursor'
+    \ ,'c' : ':tabnew | CommitGit'
+    \ ,'C' : '"git checkout file'
+    \ }
+endfun
 
 fun! vim_addon_git#StatusViewAction(action)
   if a:action != 'c'
@@ -43,18 +58,6 @@ fun! vim_addon_git#StatusViewAction(action)
     exec '!git checkout '.file
   endif
 
-endfun
-
-fun! vim_addon_git#Names()
-  return  {
-    \ 'a' : 'add'
-    \ ,'p' : 'add patched'
-    \ ,'U' : 'unstage (git rm --cached)'
-    \ ,'r' : 'rm (git rm)'
-    \ ,'D' : '!git diff on file under cursor'
-    \ ,'c' : ':tabnew | CommitGit'
-    \ ,'C' : '"git checkout file'
-    \ }
 endfun
 
 fun! vim_addon_git#StatusOnRead()
@@ -89,29 +92,7 @@ fun! vim_addon_git#StatusAndActions()
   endfor
 endf
 
-fun! vim_addon_git#GitGotoLocations()
-  " only add commit location if the commit exists
-  let thing = expand('<cWORD>')
-  if thing =~ '^[ab]/'
-    " diff file a/foo/bar ? strip a
-    if filereadable(thing[2:])
-      return [{ 'filename' : thing[2:], 'break' : 1 }]
-    endif
-    return []
-  else
-    " hash ?
-    try
-      let hash = substitute(thing,'[<>]','','g')
-      call tovl#runtaskinbackground#System(["git","rev-list","-1",hash])
-      " no failure 
-      let list = [ { 'filename' : views#View('exec', ['git','show',hash], 1), 'break' : 1} ]
-    catch /.*/
-      let list = []
-    endtry
-    return list
-  endif
-endf
-
+" more command implementations {{{1
 fun! vim_addon_git#BDiffSplitGit()
   let proposal = "show HEAD:".expand('%:.')
   let args = split(input("git : ", proposal),'\s\+')
@@ -132,6 +113,7 @@ fun! vim_addon_git#GitLog()
   call views#View("exec",["git"] + args)
 endf
 
+" commit buffer and helpers {{{1
 fun! vim_addon_git#CommitOnBufWrite()
   let lines = getline(1,line('$'))
   " remove separator and git status output:
@@ -185,21 +167,6 @@ fun! vim_addon_git#Commit()
   endif
 endf
 
-fun! vim_addon_git#IsClean()
-  try
-    call vim_addon_git#System(["git","status"])
-    " exit status 0 = there are changes
-    " this may break..
-    return 0
-  catch /.*/
-    return 1
-  endtry
-endf
-
-fun! vim_addon_git#Sep(name)
-  return "#===== ".a:name." ====================================================="
-endf
-
 fun! vim_addon_git#BCommit()
   " ensure nothing else is staged
   try
@@ -221,6 +188,24 @@ fun! vim_addon_git#BCommit()
   !git add %
   call vim_addon_git#Commit()
 endfun
+
+" helpers {{{1
+
+fun! vim_addon_git#IsClean()
+  try
+    call vim_addon_git#System(["git","status"])
+    " exit status 0 = there are changes
+    " this may break..
+    return 0
+  catch /.*/
+    return 1
+  endtry
+endf
+
+
+fun! vim_addon_git#Sep(name)
+  return "#===== ".a:name." ====================================================="
+endf
 
 " TODO replace this function ?
 fun! vim_addon_git#System(items, ... )
@@ -259,3 +244,30 @@ fun! s:EscapeShArg(arg)
   " zsh requires []
   return escape(a:arg, ";()*<>| '\"\\`[]&")
 endf
+
+
+" scratch buffer {{{ 2
+fun! s:ScratchClean(name)
+  exec "TScratch 'scratch':".string("__".a:name."__")
+  %g!//d
+endf
+
+fun! s:ScratchCleanAdvanced(name, onRead, onWrite, helptext)
+  call s:ScratchClean(a:name)
+  if type(a:onWrite) == type("")
+    exec 'au vim_addon_git BufWriteCmd <buffer> '.a:onWrite
+  endif
+  exec 'au vim_addon_git BufReadCmd <buffer> '.a:onRead
+  exec 'command! -nargs=0 -buffer Help call vim_addon_git#Help('.string(a:helptext).')'
+  " get contents:
+  e!
+endf
+
+fun! vim_addon_git#Help(h)
+  call s:ScratchClean("HELP_OF_TMP_BUFFER")
+  %g!//d
+  call append(0, a:h)
+endf
+
+
+" vim: fdm=marker
