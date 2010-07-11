@@ -15,3 +15,5 @@ I should reference the other existing vim git scripts here. (TODO)
 See www.vim.org
 
 Tested on Linux only
+
+On all views you can use :e! to refresh them
