@@ -11,11 +11,14 @@ or
 will open a special buffer which maps some very common actions.
 See vim_addon_git#Names() in autoload/vim_addon_git.vim
 
-Tested on Linux only
-
+press gf on a/path/file.ext or 34efc237 (git hash)
+to open the file or a view of the commit. (see vim-addon-views)
 On all views you can use :e! to refresh them
 
+Tested on Linux only
+
 Are you still missing documentation? Tell me.
+
 
 INSTALLATION:
 
