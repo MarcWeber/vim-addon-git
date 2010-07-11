@@ -42,3 +42,7 @@ TODO:
 
 
 credits to Tass who finally podded me enough to move the code out of tovl ..
+
+
+== alternatives
+http://www.vim.org/scripts/script.php?script_id=90 (vcscommand.vim)
