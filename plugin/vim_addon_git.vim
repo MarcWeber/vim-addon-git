@@ -6,7 +6,7 @@ command -nargs=0 DiffGit call views#View("exec", ["git","diff"])
 " checkout current file (throw away your changes). Then reload file
 " I should be using e! when ! is given only (TODO) ?
 command -nargs=* BCheckoutGit  exec '!git checkout '.expand('%')." "| e!
-command -nargs=0 BDiff update| call views#View("exec",["git","diff",expand("%")])
+command -nargs=0 BDiffGit update| call views#View("exec",["git","diff",expand("%")])
 command -nargs=0 BDiffSplitGit call vim_addon_git#BDiffSplitGit(<f-args>)
 command -nargs=0 DiffCachedGit call views#View("exec",["git","diff","--cached"])
 command -nargs=0 BDiffCachedGit update | call views#View("exec",["git","diff","--cached",expand("%")])
