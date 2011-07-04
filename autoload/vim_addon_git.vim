@@ -37,7 +37,7 @@ endfun
 
 fun! vim_addon_git#StatusViewAction(action)
   if a:action != 'c'
-    let list = matchlist(getline('.'), '^#\s*\%(\(\S*\):\)\?\s*\(\S*\)')
+    let list = matchlist(getline('.'), '^#\s*\%(\(\S*\|both modified\):\)\?\s*\(\S*\)')
     let status = list[1]
     let file = list[2]
   endif
