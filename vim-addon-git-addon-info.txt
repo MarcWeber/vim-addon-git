@@ -8,7 +8,7 @@
     "vim-addon-mw-utils": {},
     "tlib": {},
     "vim-addon-views": {},
-    "vim-addon-goto-thing-at-cursor": {},
+    "vim-addon-goto-thing-at-cursor": {}
   },
   "description" : "my vim interface covering 96% of the git commands I use most often"
 }

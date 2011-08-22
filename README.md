@@ -33,6 +33,11 @@ INSTALLATION:
   as well
 
 
+related work
+===========
+fugitive
+vcscommand
+
 TODO:
 
 
