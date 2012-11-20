@@ -10,14 +10,13 @@ fun! vim_addon_git#GitGotoLocations()
     return []
   else
     " hash ?
-    try
-      let hash = substitute(thing,'[<>]','','g')
-      call tovl#runtaskinbackground#System(["git","rev-list","-1",hash])
-      " no failure 
+    let hash = substitute(thing,'[<>]','','g')
+    call system("git rev-list -1 ".hash)
+    if v:shell_error == 0
       let list = [ { 'filename' : views#View('exec', ['git','show',hash], 1), 'break' : 1} ]
-    catch /.*/
+    else 
       let list = []
-    endtry
+    endif
     return list
   endif
 endf
@@ -32,6 +31,7 @@ fun! vim_addon_git#Names()
     \ ,'D' : '!git diff on file under cursor'
     \ ,'c' : ':tabnew | CommitGit'
     \ ,'C' : '"git checkout file'
+    \ ,'t' : '"git reset file'
     \ }
 endfun
 
@@ -54,6 +54,8 @@ fun! vim_addon_git#StatusViewAction(action)
     call views#View('exec',['git', 'diff', file])
   elseif a:action  == 'c'
     tabnew | CommitGit
+  elseif a:action  == 't'
+    exec '!git reset '.file
   elseif a:action  == 'C'
     exec '!git checkout '.file
   endif

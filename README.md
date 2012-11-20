@@ -34,9 +34,10 @@ INSTALLATION:
 
 
 related work
-===========
+============
 fugitive
 vcscommand
+https://bitbucket.org/ZyX_I/aurum
 
 TODO:
 
