@@ -21,7 +21,7 @@ fun! EnableGitCommands()
   command! -nargs=0 BCommitGit update| call vim_addon_git#BCommit()
   command! -nargs=0 CommitGit call vim_addon_git#Commit()
   command! -nargs=0 StatusGit call vim_addon_git#StatusAndActions()
-  command! -nargs=0 LogThisFileGit call views#View("exec",["git","log","--",expand("%")])
+  command! -nargs=0 BLog call views#View("exec",["git","log","--",expand("%")])
 
   " used by tmp buffers
   augroup vim_addon_git
